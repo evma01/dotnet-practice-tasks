@@ -7,8 +7,12 @@ if (string.IsNullOrEmpty(userInput))
 {
     Console.WriteLine("Invalid input. Please provide a number");
 }
+else {
+    int fizzbuzzSize = int.Parse(userInput);
+    string result = FizzBuzzLine.Generate(fizzbuzzSize);
+    Console.WriteLine(result);
+}
 
-int fizzbuzzSize = int.Parse(userInput);
 
 // Finish the program so it will print a line
 // with the provided element count according to

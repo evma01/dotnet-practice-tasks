@@ -3,15 +3,18 @@
 public class FizzBuzzLineTests
 {
     [Fact]
-    public void Generate_ReturnsAString()
+    public void Generate_Zero()
     {
-        // Arrange
-        var fizzBuzzLine = new FizzBuzzLine();
+        var actual = FizzBuzzLine.Generate(0);
+        var expected = "";
+        Assert.Equal(expected, actual);
+    }
 
-        // Act
-        var result = fizzBuzzLine.Generate(1);
-        
-        // Assert
-        Assert.NotNull(result);
+    [Fact]
+    public void Generate_Fifteen()
+    {
+        var actual = FizzBuzzLine.Generate(15);
+        var expected = "1, 2, Fizz, 4, Buzz, Fizz, 7, 8, Fizz, Buzz, 11, Fizz, 13, 14, Fizz Buzz";
+        Assert.Equal(expected, actual);
     }
 }
