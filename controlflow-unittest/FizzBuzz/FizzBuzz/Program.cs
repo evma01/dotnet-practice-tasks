@@ -9,7 +9,7 @@ if (string.IsNullOrEmpty(userInput))
 }
 else {
     int fizzbuzzSize = int.Parse(userInput);
-    string result = FizzBuzzLine.Generate(fizzbuzzSize);
+    string result = new FizzBuzzLine(new FizzBuzzGenerator()).Generate(fizzbuzzSize);
     Console.WriteLine(result);
 }
 
