@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Json;
+﻿using System.Diagnostics;
+using System.Net.Http.Json;
 using WeatherConsole;
 
 var citiesWithCoordinates = new Dictionary<string, Coordinate>(){
@@ -18,7 +19,9 @@ var httpClient = new HttpClient
     BaseAddress = new Uri("https://api.open-meteo.com/v1/forecast/")
 };
 
+Stopwatch stopwatch = new Stopwatch();
 
+stopwatch.Start();
 foreach (var kvp in citiesWithCoordinates)
 {
     string query = WeatherApiHelper.GenerateWeatherRequestUri(kvp.Value);
@@ -34,14 +37,41 @@ foreach (var kvp in citiesWithCoordinates)
         Console.WriteLine("{0} Exception caught: ", e);
     }
 }
+stopwatch.Stop();
+Console.WriteLine(stopwatch.ElapsedMilliseconds);
 
-/**
-async Task<WeatherResponse> GetWeatherResponse(string query, HttpClient httpClient)
+stopwatch.Reset();
+stopwatch.Start();
+
+var tasks = new List<Task<WeatherResponse?>>();
+foreach (var kvp in citiesWithCoordinates)
 {
-    return await httpClient.GetFromJsonAsync<WeatherResponse>(query);
+    string query = WeatherApiHelper.GenerateWeatherRequestUri(kvp.Value);
+    Task<WeatherResponse?> responseTask = httpClient
+        .GetFromJsonAsync<WeatherResponse>(query)
+        .ContinueWith<WeatherResponse?>((task) => {
+            Console.WriteLine($"City: {kvp.Key}, Coordinate: {kvp.Value}, Query: {query}");
+            if (task.IsCompleted)
+            {
+                Console.WriteLine($"Response: {task.Result}");
+            }
+            if (task.IsFaulted)
+            {
+                Console.WriteLine("sad-panda");
+            }
+            return task.Result;
+        });
+    tasks.Add(responseTask);
 }
-*/
 
+await Task.WhenAll(tasks);
+stopwatch.Stop();
+Console.WriteLine(stopwatch.ElapsedMilliseconds);
+
+//foreach (var task in tasks)
+//{
+//    Console.WriteLine("Task: {0}", await task);
+//}
 
 // Print all the cities' (citiesWithCoordinates) temprature to the console window
 // Order doesn't matter
