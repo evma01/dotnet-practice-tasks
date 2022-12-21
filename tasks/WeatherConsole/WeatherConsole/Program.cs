@@ -1,5 +1,7 @@
-﻿var citiesWithCoordinates = new Dictionary<string, Coordinate>
-{
+﻿using System.Net.Http.Json;
+using WeatherConsole;
+
+var citiesWithCoordinates = new Dictionary<string, Coordinate>(){
     { "Budapest", new Coordinate(47.4979, 19.0402) },
     { "Paris", new Coordinate(48.8566, 2.3522) },
     { "Stockholme", new Coordinate(61.20, 15.55) },
@@ -16,7 +18,30 @@ var httpClient = new HttpClient
     BaseAddress = new Uri("https://api.open-meteo.com/v1/forecast/")
 };
 
-Console.WriteLine("Current tempratures:");
+
+foreach (var kvp in citiesWithCoordinates)
+{
+    string query = WeatherApiHelper.GenerateWeatherRequestUri(kvp.Value);
+    Console.WriteLine("City: {0}, Coordinate: {1}, Query: {2}", kvp.Key, kvp.Value, query);
+
+    try
+    {
+        WeatherResponse response = await httpClient.GetFromJsonAsync<WeatherResponse>(query);
+        Console.WriteLine("Response: {0}", response);
+    }
+    catch (Exception e)
+    {
+        Console.WriteLine("{0} Exception caught: ", e);
+    }
+}
+
+/**
+async Task<WeatherResponse> GetWeatherResponse(string query, HttpClient httpClient)
+{
+    return await httpClient.GetFromJsonAsync<WeatherResponse>(query);
+}
+*/
+
 
 // Print all the cities' (citiesWithCoordinates) temprature to the console window
 // Order doesn't matter
